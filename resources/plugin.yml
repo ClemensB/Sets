@@ -1,0 +1,13 @@
+name: Sets
+main: com.clemensboos.bukkit.Sets.Sets
+version: 0.1Dev
+commands:
+  clearinventory:
+    description: Clears your inventory
+    usage: /<command>
+  startitems:
+    description: Gives you the start items
+    usage: /<command>
+  set:
+    description: Gives you a set
+    usage: /<command> <SetName>
