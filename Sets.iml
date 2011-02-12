@@ -9,6 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Bukkit" level="application" />
     <orderEntry type="library" name="General" level="application" />
+    <orderEntry type="library" name="Permissions" level="application" />
   </component>
 </module>
 

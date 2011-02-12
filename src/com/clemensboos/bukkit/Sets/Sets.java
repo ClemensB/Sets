@@ -12,6 +12,8 @@ import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nijikokun.bukkit.General.General;
+import com.nijikokun.bukkit.Permissions.Permissions;
+import com.nijiko.permissions.PermissionHandler;
 
 public class Sets extends JavaPlugin {
     public static final Logger log = Logger.getLogger("Minecraft");
@@ -21,6 +23,8 @@ public class Sets extends JavaPlugin {
 
     private Hashtable<String, Hashtable<Byte, ItemStack>> sets = new Hashtable<String, Hashtable<Byte, ItemStack>>();
     private String startSet = "";
+
+    public static PermissionHandler Permissions = null;
 
     public Sets(PluginLoader pluginLoader, Server instance, PluginDescriptionFile desc, File folder, File plugin, ClassLoader cLoader)
     {
@@ -36,6 +40,7 @@ public class Sets extends JavaPlugin {
         log.info("[" + Name + "] version [" + Version + "] loaded");
 
         setupCommands();
+        setupPermissions();
 
         loadSets();
     }
@@ -82,9 +87,9 @@ public class Sets extends JavaPlugin {
                         Byte slot = Byte.valueOf(parts[0]);
                         Integer itemId = Integer.valueOf(parts[1]);
                         Integer count = Integer.valueOf(parts[2]);
-                        Byte data = 0;
+                        Short data = 0;
                         if (parts.length >= 4)
-                            data = Byte.valueOf(parts[3]);
+                            data = Short.valueOf(parts[3]);
                         ItemStack item = new ItemStack(itemId, count, data);
                         currentSet.put(slot, item);
                     }
@@ -157,7 +162,7 @@ public class Sets extends JavaPlugin {
         return true;
     }
 
-    private void setupCommands()
+    public void setupCommands()
     {
         Plugin pgeneral = this.getServer().getPluginManager().getPlugin("General");
 
@@ -170,10 +175,29 @@ public class Sets extends JavaPlugin {
         }
     }
 
+    public void setupPermissions()
+    {
+        Plugin ppermissions = this.getServer().getPluginManager().getPlugin("Permissions");
+
+        if (Permissions == null && ppermissions != null)
+        {
+            Permissions = ((Permissions)ppermissions).getHandler();
+        }
+    }
+
     @Override
-    public boolean onCommand(Player player, Command command, String commandLabel, String[] args)
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args)
     {
         String commandName = command.getName();
+
+        Player player = (Player)sender;
+
+        if (Permissions != null)
+            if (!Permissions.has(player, "sets." + commandName))
+            {
+                player.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
+                return true;
+            }
 
         if (commandName.equalsIgnoreCase("set"))
         {
